@@ -23,6 +23,9 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> with SingleTickerPr
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _tabController.addListener(() {
+      setState(() {});
+    });
   }
 
   @override
@@ -104,6 +107,14 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> with SingleTickerPr
           icon: const Icon(Icons.menu),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
+        actions: [
+          if (_tabController.index == 1)
+            IconButton(
+              icon: const Icon(Icons.download),
+              tooltip: l10n.exportData,
+              onPressed: _exportData,
+            ),
+        ],
         bottom: TabBar(
           controller: _tabController,
           tabs: [
