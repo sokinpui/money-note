@@ -1,16 +1,46 @@
-# money_note
+# Money Note
 
-A new Flutter project.
+A simple, straightforward bookkeeping app built with Flutter and Material 3. It's designed to help you track where your money goes without making it a chore.
 
-## Getting Started
+### What it does
+*   **Quick Entry:** Adding a record is fast. If you've typed something before, the app suggests it and fills in the category and amount for you.
+*   **Built-in Calculator:** Do your math right inside the value field—no need to switch apps to figure out your lunch bill split.
+*   **Dashboard:** See your spending and earnings for the last week in a simple chart. It also shows your net earnings for the current week and month.
+*   **History:** A clean list of everything you've recorded. You can also export your data if you need it elsewhere.
+*   **Offline First:** Everything is stored locally on your device using SQLite.
 
-This project is a starting point for a Flutter application.
+### Tech Stuff
+*   **Framework:** Flutter
+*   **State Management:** Riverpod
+*   **Database:** SQLite (sqflite)
+*   **Charts:** fl_chart
 
-A few resources to get you started if this is your first Flutter project:
+### Running it
+Standard Flutter rules apply:
+1. `flutter pub get`
+2. `flutter run`
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+### Development & Deployment
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+#### Android
+To build a release APK:
+```bash
+flutter build apk --release
+```
+To install it on a connected device via ADB:
+```bash
+adb install build/app/outputs/flutter-apk/app-release.apk
+```
+
+#### iOS
+To build for iOS (requires macOS and Xcode):
+```bash
+flutter build ios --release
+```
+Then you can open `ios/Runner.xcworkspace` in Xcode to deploy to a physical device.
+
+#### Testing
+Run the test suite:
+```bash
+flutter test
+```
