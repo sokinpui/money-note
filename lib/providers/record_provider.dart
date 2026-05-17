@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/record.dart';
 import '../services/database_helper.dart';
@@ -49,7 +50,7 @@ class RecordNotifier extends AsyncNotifier<List<Record>> {
 
   Future<String> exportRecords() async {
     final records = await _fetchRecords();
-    return records.map((e) => e.toMap()).toList().toString();
+    return jsonEncode(records.map((e) => e.toMap()).toList());
   }
 
   Future<void> importRecords(List<dynamic> list) async {

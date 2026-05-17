@@ -1,6 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'dart:convert';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../l10n/app_localizations.dart';
 import 'dashboard_page.dart';
 import 'history_page.dart';
@@ -81,17 +84,16 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> with SingleTickerPr
   }
 
   void _exportData() async {
-    final l10n = AppLocalizations.of(context)!;
     final jsonStr = await ref.read(recordProvider.notifier).exportRecords();
-    if (!mounted) return;
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.exportJson),
-        content: SelectableText(jsonStr),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.close)),
-        ],
+    
+    final directory = await getTemporaryDirectory();
+    final file = File('${directory.path}/records_all_export.json');
+    await file.writeAsString(jsonStr);
+
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(file.path)],
+        subject: 'Exported Records',
       ),
     );
   }
@@ -107,14 +109,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> with SingleTickerPr
           icon: const Icon(Icons.menu),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
-        actions: [
-          if (_tabController.index == 1)
-            IconButton(
-              icon: const Icon(Icons.download),
-              tooltip: l10n.exportData,
-              onPressed: _exportData,
-            ),
-        ],
+        actions: [],
         bottom: TabBar(
           controller: _tabController,
           tabs: [
@@ -165,7 +160,7 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> with SingleTickerPr
               },
             ),
             ListTile(
-              leading: const Icon(Icons.file_upload),
+              leading: const Icon(Icons.download),
               title: Text(l10n.exportData),
               onTap: () {
                 Navigator.pop(context);

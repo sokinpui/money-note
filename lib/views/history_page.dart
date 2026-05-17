@@ -1,5 +1,10 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/record_provider.dart';
 import 'package:intl/intl.dart';
@@ -57,18 +62,18 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
     );
   }
 
-  void _exportSelected(List<Record> records) {
+  Future<void> _exportSelected(List<Record> records) async {
     final selectedRecords = records.where((r) => _selectedIds.contains(r.id)).toList();
-    final json = selectedRecords.map((e) => e.toMap()).toList().toString();
+    final jsonString = jsonEncode(selectedRecords.map((e) => e.toMap()).toList());
     
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context)!.exportData),
-        content: SelectableText(json),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text(AppLocalizations.of(context)!.close)),
-        ],
+    final directory = await getTemporaryDirectory();
+    final file = File('${directory.path}/records_export.json');
+    await file.writeAsString(jsonString);
+
+    await SharePlus.instance.share(
+      ShareParams(
+        files: [XFile(file.path)],
+        subject: 'Exported Records',
       ),
     );
   }
@@ -94,7 +99,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
                 ),
                 actions: [
                   IconButton(
-                    icon: const Icon(Icons.share),
+                    icon: const Icon(Icons.download),
                     onPressed: () {
                       recordsAsync.whenData((records) => _exportSelected(records));
                     },
