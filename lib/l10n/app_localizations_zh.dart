@@ -106,4 +106,18 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pasteJson => '在此处粘贴 JSON';
+
+  @override
+  String get dailySummary => '每日摘要';
+
+  @override
+  String get netEarnings => '净收益';
+
+  @override
+  String daysAverage(int days) {
+    return '$days天平均';
+  }
+
+  @override
+  String get type => '类型';
 }

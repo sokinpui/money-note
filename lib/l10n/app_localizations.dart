@@ -295,6 +295,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Paste JSON here'**
   String get pasteJson;
+
+  /// No description provided for @dailySummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Summary'**
+  String get dailySummary;
+
+  /// No description provided for @netEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Net Earnings'**
+  String get netEarnings;
+
+  /// No description provided for @daysAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days average'**
+  String daysAverage(int days);
+
+  /// No description provided for @type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get type;
 }
 
 class _AppLocalizationsDelegate

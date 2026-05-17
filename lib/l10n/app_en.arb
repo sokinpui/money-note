@@ -31,5 +31,16 @@
   "close": "Close",
   "exportJson": "Export JSON",
   "importJson": "Import JSON",
-  "pasteJson": "Paste JSON here"
+  "pasteJson": "Paste JSON here",
+  "dailySummary": "Daily Summary",
+  "netEarnings": "Net Earnings",
+  "daysAverage": "{days} days average",
+  "@daysAverage": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "type": "Type"
 }

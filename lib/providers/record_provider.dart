@@ -52,36 +52,69 @@ final recordProvider = AsyncNotifierProvider<RecordNotifier, List<Record>>(() {
   return RecordNotifier();
 });
 
-final weeklySummaryProvider = Provider<AsyncValue<Map<String, double>>>((ref) {
+final weeklySummaryProvider = Provider<AsyncValue<Map<String, dynamic>>>((ref) {
   final recordsAsync = ref.watch(recordProvider);
   return recordsAsync.whenData((records) {
     final now = DateTime.now();
-    final lastWeek = now.subtract(const Duration(days: 7));
-    final lastMonth = now.subtract(const Duration(days: 30));
-
-    double weekEarn = 0;
-    double monthEarn = 0;
-
-    for (var record in records) {
-      if (record.date.isAfter(lastWeek)) {
-        if (record.type == 'Income') {
-          weekEarn += record.value;
-        } else {
-          weekEarn -= record.value;
+    final today = DateTime(now.year, now.month, now.day);
+    
+    // Daily Summary: Last 7 days
+    final List<Map<String, dynamic>> dailyData = [];
+    for (int i = 6; i >= 0; i--) {
+      final date = today.subtract(Duration(days: i));
+      double expense = 0;
+      for (var record in records) {
+        if (record.date.year == date.year && record.date.month == date.month && record.date.day == date.day) {
+          if (record.type == 'Expense') {
+            expense += record.value;
+          }
         }
       }
-      if (record.date.isAfter(lastMonth)) {
-        if (record.type == 'Income') {
-          monthEarn += record.value;
-        } else {
-          monthEarn -= record.value;
-        }
+      dailyData.add({'date': date, 'expense': expense});
+    }
+
+    // Averages
+    double total7Days = 0;
+    for (var d in dailyData) {
+      total7Days += d['expense'];
+    }
+    
+    double total30Days = 0;
+    final last30Days = today.subtract(const Duration(days: 30));
+    for (var record in records) {
+      if (record.date.isAfter(last30Days) && record.type == 'Expense') {
+        total30Days += record.value;
       }
     }
 
+    // Net Earnings: Last 3 months
+    final List<Map<String, dynamic>> monthlyData = [];
+    for (int i = 2; i >= 0; i--) {
+      final monthDate = DateTime(now.year, now.month - i, 1);
+      double income = 0;
+      double expense = 0;
+      for (var record in records) {
+        if (record.date.year == monthDate.year && record.date.month == monthDate.month) {
+          if (record.type == 'Income') {
+            income += record.value;
+          } else {
+            expense += record.value;
+          }
+        }
+      }
+      monthlyData.add({
+        'month': monthDate,
+        'income': income,
+        'expense': expense,
+        'net': income - expense,
+      });
+    }
+
     return {
-      'week': weekEarn,
-      'month': monthEarn,
+      'dailyData': dailyData,
+      'avg7Days': total7Days / 7,
+      'avg30Days': total30Days / 30,
+      'monthlyData': monthlyData,
     };
   });
 });

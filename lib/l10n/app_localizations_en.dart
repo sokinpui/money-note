@@ -106,4 +106,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pasteJson => 'Paste JSON here';
+
+  @override
+  String get dailySummary => 'Daily Summary';
+
+  @override
+  String get netEarnings => 'Net Earnings';
+
+  @override
+  String daysAverage(int days) {
+    return '$days days average';
+  }
+
+  @override
+  String get type => 'Type';
 }
