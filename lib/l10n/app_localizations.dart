@@ -356,11 +356,29 @@ abstract class AppLocalizations {
   /// **'Multi Select'**
   String get multiSelect;
 
-  /// No description provided for @export.
+  /// No description provided for @newCategory.
   ///
   /// In en, this message translates to:
-  /// **'Export'**
-  String get export;
+  /// **'New Category'**
+  String get newCategory;
+
+  /// No description provided for @categoryName.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Name'**
+  String get categoryName;
+
+  /// No description provided for @selectIcon.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Icon'**
+  String get selectIcon;
+
+  /// No description provided for @other.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get other;
 }
 
 class _AppLocalizationsDelegate

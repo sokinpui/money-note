@@ -140,5 +140,14 @@ class AppLocalizationsZh extends AppLocalizations {
   String get multiSelect => '多选';
 
   @override
-  String get export => '导出';
+  String get newCategory => '新类别';
+
+  @override
+  String get categoryName => '类别名称';
+
+  @override
+  String get selectIcon => '选择图标';
+
+  @override
+  String get other => '其他';
 }

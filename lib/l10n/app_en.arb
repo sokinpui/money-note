@@ -49,5 +49,8 @@
   "unsavedChangesMsg": "You have unsaved changes. Are you sure you want to leave?",
   "confirm": "Confirm",
   "multiSelect": "Multi Select",
-  "export": "Export"
+  "newCategory": "New Category",
+  "categoryName": "Category Name",
+  "selectIcon": "Select Icon",
+  "other": "Other"
 }

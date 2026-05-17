@@ -9,6 +9,8 @@ import '../l10n/app_localizations.dart';
 import '../providers/record_provider.dart';
 import 'package:intl/intl.dart';
 import 'add_record_page.dart';
+import '../providers/category_provider.dart';
+import '../models/category.dart' as model;
 import '../models/record.dart';
 
 class HistoryPage extends ConsumerStatefulWidget {
@@ -92,6 +94,7 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
       child: Scaffold(
         appBar: _isSelectionMode
             ? AppBar(
+                backgroundColor: Theme.of(context).colorScheme.secondaryContainer,
                 title: Text('${_selectedIds.length} ${l10n.multiSelect}'),
                 leading: IconButton(
                   icon: const Icon(Icons.close),
@@ -118,18 +121,32 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
             itemBuilder: (context, index) {
               final record = records[index];
               final isSelected = _selectedIds.contains(record.id);
+              
+              final categories = ref.watch(categoryProvider).value ?? [];
+              final category = categories.firstWhere(
+                (c) => c.name == record.category && c.type == record.type,
+                orElse: () => model.Category(name: 'Other', iconName: 'category', type: record.type),
+              );
 
               return ListTile(
                 selected: isSelected,
                 leading: _isSelectionMode
                     ? Checkbox(
                         value: isSelected,
-                        onChanged: (_) => _toggleSelection(record.id!),
+                        onChanged: (_) => record.id != null ? _toggleSelection(record.id!) : null,
                       )
-                    : CircleAvatar(
-                        backgroundColor: record.type == 'Income' ? Colors.green.shade100 : Colors.red.shade100,
+                    : Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: record.type == 'Income' 
+                            ? Colors.green.withValues(alpha: 0.1) 
+                            : Colors.red.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
                         child: Icon(
-                          record.type == 'Income' ? Icons.arrow_upward : Icons.arrow_downward,
+                          model.Category.getIconData(category.iconName),
+                          size: 20,
                           color: record.type == 'Income' ? Colors.green : Colors.red,
                         ),
                       ),

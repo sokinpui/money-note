@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../l10n/app_localizations.dart';
 import '../models/record.dart';
 import '../providers/record_provider.dart';
+import '../providers/category_provider.dart';
+import '../models/category.dart' as model;
 
 class AddRecordPage extends ConsumerStatefulWidget {
   final Record? initialRecord;
@@ -15,10 +17,10 @@ class AddRecordPage extends ConsumerStatefulWidget {
 class _AddRecordPageState extends ConsumerState<AddRecordPage> {
   late final TextEditingController _nameController;
   late final TextEditingController _valueController;
-  late final TextEditingController _categoryController;
   late final TextEditingController _noteController;
   late String _type;
-  List<Record> _suggestions = [];
+  String _selectedCategory = 'Other';
+  List<Record> _nameSuggestions = [];
   DateTime? _lastErrorTime;
 
   @override
@@ -26,16 +28,15 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
     super.initState();
     _nameController = TextEditingController(text: widget.initialRecord?.name ?? '');
     _valueController = TextEditingController(text: widget.initialRecord?.value.toString() ?? '');
-    _categoryController = TextEditingController(text: widget.initialRecord?.category ?? '');
     _noteController = TextEditingController(text: widget.initialRecord?.note ?? '');
     _type = widget.initialRecord?.type ?? 'Expense';
+    _selectedCategory = widget.initialRecord?.category ?? 'Other';
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _valueController.dispose();
-    _categoryController.dispose();
     _noteController.dispose();
     super.dispose();
   }
@@ -44,23 +45,22 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
     if (widget.initialRecord == null) {
       return _nameController.text.isNotEmpty ||
           _valueController.text.isNotEmpty ||
-          _categoryController.text.isNotEmpty ||
           _noteController.text.isNotEmpty;
     }
     return _nameController.text != widget.initialRecord!.name ||
         _valueController.text != widget.initialRecord!.value.toString() ||
-        _categoryController.text != widget.initialRecord!.category ||
         (_noteController.text != (widget.initialRecord!.note ?? '')) ||
+        _selectedCategory != widget.initialRecord!.category ||
         _type != widget.initialRecord!.type;
   }
 
   void _onNameChanged(String value) async {
     if (value.isEmpty) {
-      setState(() => _suggestions = []);
+      setState(() => _nameSuggestions = []);
       return;
     }
     final suggestions = await ref.read(recordProvider.notifier).getSuggestions(value);
-    setState(() => _suggestions = suggestions);
+    setState(() => _nameSuggestions = suggestions);
   }
 
   void _applySuggestion(Record record) {
@@ -68,9 +68,9 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
       _nameController.text = record.name;
       _valueController.text = record.value.toString();
       _type = record.type;
-      _categoryController.text = record.category;
+      _selectedCategory = record.category;
       _noteController.text = record.note ?? '';
-      _suggestions = [];
+      _nameSuggestions = [];
     });
   }
 
@@ -92,7 +92,7 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
       name: _nameController.text,
       value: double.tryParse(_valueController.text) ?? 0.0,
       type: _type,
-      category: _categoryController.text,
+      category: _selectedCategory,
       note: _noteController.text,
       date: widget.initialRecord?.date ?? DateTime.now(),
     );
@@ -155,6 +155,69 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
     );
   }
 
+  void _showNewCategoryDialog() {
+    final l10n = AppLocalizations.of(context)!;
+    final nameController = TextEditingController();
+    String selectedIconName = 'category';
+
+    final icons = [
+      'category', 'shopping_cart', 'home', 'pets', 'work', 
+      'card_giftcard', 'medical_services', 'school', 'fitness_center'
+    ];
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: Text(l10n.newCategory),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: InputDecoration(labelText: l10n.categoryName),
+              ),
+              const SizedBox(height: 16),
+              Text(l10n.selectIcon),
+              const SizedBox(height: 8),
+              Wrap(
+                spacing: 8,
+                children: icons.map((iconName) {
+                  final isSelected = selectedIconName == iconName;
+                  return InkWell(
+                    onTap: () => setDialogState(() => selectedIconName = iconName),
+                    child: Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: isSelected ? Theme.of(context).colorScheme.primaryContainer : null,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Icon(model.Category.getIconData(iconName)),
+                    ),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
+            TextButton(
+              onPressed: () {
+                if (nameController.text.isNotEmpty) {
+                  final newCat = model.Category(name: nameController.text, iconName: selectedIconName, type: _type);
+                  ref.read(categoryProvider.notifier).addCategory(newCat);
+                  setState(() => _selectedCategory = nameController.text);
+                  Navigator.pop(context);
+                }
+              },
+              child: Text(l10n.save),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -196,14 +259,14 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
                 decoration: InputDecoration(labelText: l10n.name, border: const OutlineInputBorder()),
                 onChanged: _onNameChanged,
               ),
-              if (_suggestions.isNotEmpty)
+              if (_nameSuggestions.isNotEmpty)
                 Container(
                   constraints: const BoxConstraints(maxHeight: 200),
                   child: ListView.builder(
                     shrinkWrap: true,
-                    itemCount: _suggestions.length,
+                    itemCount: _nameSuggestions.length,
                     itemBuilder: (context, index) {
-                      final s = _suggestions[index];
+                      final s = _nameSuggestions[index];
                       return ListTile(
                         title: Text(s.name),
                         subtitle: Text('${s.category} - ${s.value}'),
@@ -223,9 +286,56 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 16),
-              TextField(
-                controller: _categoryController,
-                decoration: InputDecoration(labelText: l10n.category, border: const OutlineInputBorder()),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(l10n.category, style: Theme.of(context).textTheme.titleMedium),
+                  TextButton.icon(
+                    onPressed: _showNewCategoryDialog,
+                    icon: const Icon(Icons.add, size: 18),
+                    label: Text(l10n.newCategory),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              ref.watch(categoryProvider).when(
+                data: (categories) {
+                  final filtered = categories.where((c) => c.type == _type).toList();
+                  return Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: filtered.map((cat) {
+                      final isSelected = _selectedCategory == cat.name;
+                      return InkWell(
+                        onTap: () => setState(() => _selectedCategory = cat.name),
+                        borderRadius: BorderRadius.circular(12),
+                        child: Column(
+                          children: [
+                            Container(
+                              width: 50,
+                              height: 50,
+                              decoration: BoxDecoration(
+                                color: isSelected 
+                                  ? Theme.of(context).colorScheme.primaryContainer 
+                                  : Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                                shape: BoxShape.circle,
+                                border: isSelected ? Border.all(color: Theme.of(context).colorScheme.primary, width: 2) : null,
+                              ),
+                              child: Icon(
+                                model.Category.getIconData(cat.iconName),
+                                color: isSelected ? Theme.of(context).colorScheme.primary : null,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(cat.name == 'Other' ? l10n.other : cat.name, style: const TextStyle(fontSize: 11)),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  );
+                },
+                loading: () => const CircularProgressIndicator(),
+                error: (e, _) => Text(e.toString()),
               ),
               const SizedBox(height: 16),
               TextField(

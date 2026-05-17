@@ -141,5 +141,14 @@ class AppLocalizationsEn extends AppLocalizations {
   String get multiSelect => 'Multi Select';
 
   @override
-  String get export => 'Export';
+  String get newCategory => 'New Category';
+
+  @override
+  String get categoryName => 'Category Name';
+
+  @override
+  String get selectIcon => 'Select Icon';
+
+  @override
+  String get other => 'Other';
 }

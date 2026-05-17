@@ -49,5 +49,8 @@
   "unsavedChangesMsg": "您有未保存的更改。确定要离开吗？",
   "confirm": "确定",
   "multiSelect": "多选",
-  "export": "导出"
+  "newCategory": "新类别",
+  "categoryName": "类别名称",
+  "selectIcon": "选择图标",
+  "other": "其他"
 }
