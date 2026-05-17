@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'dart:convert';
+import '../l10n/app_localizations.dart';
 import 'dashboard_page.dart';
 import 'history_page.dart';
 import 'settings_page.dart';
 import 'add_record_page.dart';
+import '../providers/record_provider.dart';
 
-class MainScaffold extends StatefulWidget {
+class MainScaffold extends ConsumerStatefulWidget {
   const MainScaffold({super.key});
 
   @override
-  State<MainScaffold> createState() => _MainScaffoldState();
+  ConsumerState<MainScaffold> createState() => _MainScaffoldState();
 }
 
-class _MainScaffoldState extends State<MainScaffold> with SingleTickerProviderStateMixin {
+class _MainScaffoldState extends ConsumerState<MainScaffold> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -35,21 +39,76 @@ class _MainScaffoldState extends State<MainScaffold> with SingleTickerProviderSt
     );
   }
 
+  void _importData() async {
+    final l10n = AppLocalizations.of(context)!;
+    final controller = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.importJson),
+        content: TextField(
+          controller: controller,
+          maxLines: 5,
+          decoration: InputDecoration(hintText: l10n.pasteJson),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
+          TextButton(
+            onPressed: () async {
+              try {
+                final list = jsonDecode(controller.text);
+                await ref.read(recordProvider.notifier).importRecords(list);
+                if (dialogContext.mounted) {
+                  Navigator.pop(dialogContext);
+                }
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.importSuccess)));
+                }
+              } catch (e) {
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
+                }
+              }
+            },
+            child: Text(l10n.importData),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _exportData() async {
+    final l10n = AppLocalizations.of(context)!;
+    final jsonStr = await ref.read(recordProvider.notifier).exportRecords();
+    if (!mounted) return;
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(l10n.exportJson),
+        content: SelectableText(jsonStr),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.close)),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       key: _scaffoldKey,
       appBar: AppBar(
-        title: const Text('Money Note'),
+        title: Text(l10n.appTitle),
         leading: IconButton(
           icon: const Icon(Icons.menu),
           onPressed: () => _scaffoldKey.currentState?.openDrawer(),
         ),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
-            Tab(text: 'Dashboard'),
-            Tab(text: 'History'),
+          tabs: [
+            Tab(text: l10n.dashboard),
+            Tab(text: l10n.history),
           ],
         ),
       ),
@@ -57,16 +116,16 @@ class _MainScaffoldState extends State<MainScaffold> with SingleTickerProviderSt
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
+            DrawerHeader(
+              decoration: const BoxDecoration(color: Colors.blue),
               child: Text(
-                'Money Note',
-                style: TextStyle(color: Colors.white, fontSize: 24),
+                l10n.appTitle,
+                style: const TextStyle(color: Colors.white, fontSize: 24),
               ),
             ),
             ListTile(
               leading: const Icon(Icons.dashboard),
-              title: const Text('Dashboard'),
+              title: Text(l10n.dashboard),
               onTap: () {
                 _tabController.animateTo(0);
                 Navigator.pop(context);
@@ -74,7 +133,7 @@ class _MainScaffoldState extends State<MainScaffold> with SingleTickerProviderSt
             ),
             ListTile(
               leading: const Icon(Icons.history),
-              title: const Text('History'),
+              title: Text(l10n.history),
               onTap: () {
                 _tabController.animateTo(1);
                 Navigator.pop(context);
@@ -82,24 +141,24 @@ class _MainScaffoldState extends State<MainScaffold> with SingleTickerProviderSt
             ),
             ListTile(
               leading: const Icon(Icons.settings),
-              title: const Text('Settings'),
+              title: Text(l10n.settings),
               onTap: _navigateToSettings,
             ),
             const Divider(),
             ListTile(
               leading: const Icon(Icons.file_download),
-              title: const Text('Import Data'),
+              title: Text(l10n.importData),
               onTap: () {
-                // TODO: Implement Import
                 Navigator.pop(context);
+                _importData();
               },
             ),
             ListTile(
               leading: const Icon(Icons.file_upload),
-              title: const Text('Export Data'),
+              title: Text(l10n.exportData),
               onTap: () {
-                // TODO: Implement Export
                 Navigator.pop(context);
+                _exportData();
               },
             ),
           ],

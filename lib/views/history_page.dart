@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../l10n/app_localizations.dart';
 import '../providers/record_provider.dart';
 import 'package:intl/intl.dart';
 
@@ -9,6 +10,7 @@ class HistoryPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final recordsAsync = ref.watch(recordProvider);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       body: recordsAsync.when(
@@ -37,15 +39,15 @@ class HistoryPage extends ConsumerWidget {
                 showDialog(
                   context: context,
                   builder: (context) => AlertDialog(
-                    title: const Text('Delete Record?'),
+                    title: Text(l10n.deleteRecord),
                     actions: [
-                      TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+                      TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.cancel)),
                       TextButton(
                         onPressed: () {
                           ref.read(recordProvider.notifier).deleteRecord(record.id!);
                           Navigator.pop(context);
                         },
-                        child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                        child: Text(l10n.delete, style: const TextStyle(color: Colors.red)),
                       ),
                     ],
                   ),
@@ -55,14 +57,24 @@ class HistoryPage extends ConsumerWidget {
           },
         ),
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => Center(child: Text('${l10n.error}: $e')),
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {
-          // TODO: Implement Export logic
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Exporting...')));
+        onPressed: () async {
+          final jsonStr = await ref.read(recordProvider.notifier).exportRecords();
+          if (!context.mounted) return;
+          showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text(l10n.exportJson),
+              content: SelectableText(jsonStr),
+              actions: [
+                TextButton(onPressed: () => Navigator.pop(context), child: Text(l10n.close)),
+              ],
+            ),
+          );
         },
-        label: const Text('Export'),
+        label: Text(l10n.exportData),
         icon: const Icon(Icons.download),
       ),
     );

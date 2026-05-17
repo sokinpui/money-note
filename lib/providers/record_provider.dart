@@ -33,6 +33,19 @@ class RecordNotifier extends AsyncNotifier<List<Record>> {
     if (query.isEmpty) return [];
     return await ref.read(databaseHelperProvider).getRecordsByName(query);
   }
+
+  Future<String> exportRecords() async {
+    final records = await _fetchRecords();
+    return records.map((e) => e.toMap()).toList().toString();
+  }
+
+  Future<void> importRecords(List<dynamic> list) async {
+    final db = ref.read(databaseHelperProvider);
+    for (var item in list) {
+      await db.insertRecord(Record.fromMap(Map<String, dynamic>.from(item)));
+    }
+    await refreshRecords();
+  }
 }
 
 final recordProvider = AsyncNotifierProvider<RecordNotifier, List<Record>>(() {

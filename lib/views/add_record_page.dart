@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../l10n/app_localizations.dart';
 import '../models/record.dart';
 import '../providers/record_provider.dart';
 
@@ -67,16 +68,17 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Record')),
+      appBar: AppBar(title: Text(l10n.addRecord)),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
             SegmentedButton<String>(
-              segments: const [
-                ButtonSegment(value: 'Expense', label: Text('Expense'), icon: Icon(Icons.remove)),
-                ButtonSegment(value: 'Income', label: Text('Income'), icon: Icon(Icons.add)),
+              segments: [
+                ButtonSegment(value: 'Expense', label: Text(l10n.expense), icon: const Icon(Icons.remove)),
+                ButtonSegment(value: 'Income', label: Text(l10n.income), icon: const Icon(Icons.add)),
               ],
               selected: {_type},
               onSelectionChanged: (set) => setState(() => _type = set.first),
@@ -84,7 +86,7 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
             const SizedBox(height: 16),
             TextField(
               controller: _nameController,
-              decoration: const InputDecoration(labelText: 'Name', border: OutlineInputBorder()),
+              decoration: InputDecoration(labelText: l10n.name, border: const OutlineInputBorder()),
               onChanged: _onNameChanged,
             ),
             if (_suggestions.isNotEmpty)
@@ -107,7 +109,7 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
             TextField(
               controller: _valueController,
               decoration: InputDecoration(
-                labelText: 'Value',
+                labelText: l10n.value,
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(icon: const Icon(Icons.calculate), onPressed: _showCalculator),
               ),
@@ -116,18 +118,18 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
             const SizedBox(height: 16),
             TextField(
               controller: _categoryController,
-              decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder()),
+              decoration: InputDecoration(labelText: l10n.category, border: const OutlineInputBorder()),
             ),
             const SizedBox(height: 16),
             TextField(
               controller: _noteController,
-              decoration: const InputDecoration(labelText: 'Note (Optional)', border: OutlineInputBorder()),
+              decoration: InputDecoration(labelText: '${l10n.note} (${l10n.optional})', border: const OutlineInputBorder()),
             ),
             const SizedBox(height: 24),
             SizedBox(
               width: double.infinity,
               height: 50,
-              child: ElevatedButton(onPressed: _save, child: const Text('Save')),
+              child: ElevatedButton(onPressed: _save, child: Text(l10n.save)),
             ),
           ],
         ),
@@ -167,9 +169,51 @@ class _CalculatorState extends State<_Calculator> {
 
   String _evaluate(String expr) {
     // Basic evaluation for +, -, *, /
-    // Since I can't add new packages easily without confirmation, I'll do a simple one.
-    return expr; // TODO: Implement basic math or use a lib. 
-    // For now, it just returns the string to the input.
+    try {
+      // Use a basic regex to split by operators while keeping them
+      final tokens = RegExp(r'(\d+\.?\d*)|([\+\-\*\/])').allMatches(expr)
+          .map((m) => m.group(0)!)
+          .toList();
+
+      if (tokens.isEmpty) return '0';
+
+      // First pass for * and /
+      List<String> firstPass = [];
+      int i = 0;
+      while (i < tokens.length) {
+        if (tokens[i] == '*' || tokens[i] == '/') {
+          String op = tokens[i];
+          double left = double.parse(firstPass.removeLast());
+          double right = double.parse(tokens[++i]);
+          if (op == '*') {
+            firstPass.add((left * right).toString());
+          } else {
+            firstPass.add((left / right).toString());
+          }
+        } else {
+          firstPass.add(tokens[i]);
+        }
+        i++;
+      }
+
+      // Second pass for + and -
+      double result = double.parse(firstPass[0]);
+      i = 1;
+      while (i < firstPass.length) {
+        String op = firstPass[i++];
+        double val = double.parse(firstPass[i++]);
+        if (op == '+') {
+          result += val;
+        } else {
+          result -= val;
+        }
+      }
+      
+      // Return formatted result
+      return result % 1 == 0 ? result.toInt().toString() : result.toStringAsFixed(2);
+    } catch (e) {
+      return 'Error';
+    }
   }
 
   @override
