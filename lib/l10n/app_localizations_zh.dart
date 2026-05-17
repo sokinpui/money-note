@@ -123,4 +123,22 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get pleaseFillRequiredFields => '请填写所有必填字段';
+
+  @override
+  String get editRecord => '编辑记录';
+
+  @override
+  String get unsavedChanges => '未保存的更改';
+
+  @override
+  String get unsavedChangesMsg => '您有未保存的更改。确定要离开吗？';
+
+  @override
+  String get confirm => '确定';
+
+  @override
+  String get multiSelect => '多选';
+
+  @override
+  String get export => '导出';
 }

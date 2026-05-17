@@ -29,6 +29,19 @@ class RecordNotifier extends AsyncNotifier<List<Record>> {
     await refreshRecords();
   }
 
+  Future<void> deleteMultipleRecords(List<int> ids) async {
+    final db = ref.read(databaseHelperProvider);
+    for (var id in ids) {
+      await db.deleteRecord(id);
+    }
+    await refreshRecords();
+  }
+
+  Future<void> updateRecord(Record record) async {
+    await ref.read(databaseHelperProvider).updateRecord(record);
+    await refreshRecords();
+  }
+
   Future<List<Record>> getSuggestions(String query) async {
     if (query.isEmpty) return [];
     return await ref.read(databaseHelperProvider).getRecordsByName(query);

@@ -325,6 +325,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please fill in all required fields'**
   String get pleaseFillRequiredFields;
+
+  /// No description provided for @editRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Record'**
+  String get editRecord;
+
+  /// No description provided for @unsavedChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved Changes'**
+  String get unsavedChanges;
+
+  /// No description provided for @unsavedChangesMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes. Are you sure you want to leave?'**
+  String get unsavedChangesMsg;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @multiSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Multi Select'**
+  String get multiSelect;
+
+  /// No description provided for @export.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get export;
 }
 
 class _AppLocalizationsDelegate

@@ -43,5 +43,11 @@
     }
   },
   "type": "类型",
-  "pleaseFillRequiredFields": "请填写所有必填字段"
+  "pleaseFillRequiredFields": "请填写所有必填字段",
+  "editRecord": "编辑记录",
+  "unsavedChanges": "未保存的更改",
+  "unsavedChangesMsg": "您有未保存的更改。确定要离开吗？",
+  "confirm": "确定",
+  "multiSelect": "多选",
+  "export": "导出"
 }

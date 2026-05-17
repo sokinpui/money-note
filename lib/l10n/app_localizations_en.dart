@@ -123,4 +123,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseFillRequiredFields => 'Please fill in all required fields';
+
+  @override
+  String get editRecord => 'Edit Record';
+
+  @override
+  String get unsavedChanges => 'Unsaved Changes';
+
+  @override
+  String get unsavedChangesMsg =>
+      'You have unsaved changes. Are you sure you want to leave?';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get multiSelect => 'Multi Select';
+
+  @override
+  String get export => 'Export';
 }

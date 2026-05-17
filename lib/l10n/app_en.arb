@@ -43,5 +43,11 @@
     }
   },
   "type": "Type",
-  "pleaseFillRequiredFields": "Please fill in all required fields"
+  "pleaseFillRequiredFields": "Please fill in all required fields",
+  "editRecord": "Edit Record",
+  "unsavedChanges": "Unsaved Changes",
+  "unsavedChangesMsg": "You have unsaved changes. Are you sure you want to leave?",
+  "confirm": "Confirm",
+  "multiSelect": "Multi Select",
+  "export": "Export"
 }
