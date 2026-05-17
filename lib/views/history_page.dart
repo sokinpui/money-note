@@ -14,7 +14,7 @@ class HistoryPage extends ConsumerWidget {
 
     return recordsAsync.when(
       data: (records) => ListView.builder(
-        padding: const EdgeInsets.only(bottom: 80),
+        padding: const EdgeInsets.fromLTRB(0, 0, 0, 100),
         itemCount: records.length,
         itemBuilder: (context, index) {
           final record = records[index];

@@ -14,7 +14,7 @@ class DashboardPage extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 100.0),
       child: summaryAsync.when(
         data: (data) => Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,13 +66,6 @@ class _DailySummaryCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(l10n.dailySummary, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                const Row(
-                  children: [
-                    Icon(Icons.arrow_drop_down, size: 30),
-                    SizedBox(width: 8),
-                    Icon(Icons.edit_note, size: 28),
-                  ],
-                ),
               ],
             ),
             const SizedBox(height: 20),
@@ -214,13 +207,6 @@ class _NetEarningsCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(l10n.netEarnings, style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                const Row(
-                  children: [
-                    Icon(Icons.arrow_drop_down, size: 30),
-                    SizedBox(width: 8),
-                    Icon(Icons.edit_note, size: 28),
-                  ],
-                ),
               ],
             ),
             const SizedBox(height: 20),
