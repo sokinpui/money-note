@@ -18,6 +18,7 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
   final _noteController = TextEditingController();
   String _type = 'Expense';
   List<Record> _suggestions = [];
+  DateTime? _lastErrorTime;
 
   void _onNameChanged(String value) async {
     if (value.isEmpty) {
@@ -40,7 +41,17 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
   }
 
   void _save() {
-    if (_nameController.text.isEmpty || _valueController.text.isEmpty) return;
+    if (_nameController.text.isEmpty || _valueController.text.isEmpty) {
+      final now = DateTime.now();
+      if (_lastErrorTime == null || now.difference(_lastErrorTime!) > const Duration(seconds: 5)) {
+        _lastErrorTime = now;
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.pleaseFillRequiredFields)),
+        );
+      }
+      return;
+    }
 
     final record = Record(
       name: _nameController.text,
@@ -124,6 +135,7 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
             TextField(
               controller: _noteController,
               decoration: InputDecoration(labelText: '${l10n.note} (${l10n.optional})', border: const OutlineInputBorder()),
+              maxLines: 5,
             ),
             const SizedBox(height: 24),
             SizedBox(

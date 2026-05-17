@@ -120,4 +120,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get type => 'Type';
+
+  @override
+  String get pleaseFillRequiredFields => 'Please fill in all required fields';
 }

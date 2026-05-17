@@ -42,5 +42,6 @@
       }
     }
   },
-  "type": "类型"
+  "type": "类型",
+  "pleaseFillRequiredFields": "请填写所有必填字段"
 }

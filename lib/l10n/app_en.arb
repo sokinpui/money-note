@@ -42,5 +42,6 @@
       }
     }
   },
-  "type": "Type"
+  "type": "Type",
+  "pleaseFillRequiredFields": "Please fill in all required fields"
 }

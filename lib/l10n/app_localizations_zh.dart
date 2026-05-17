@@ -120,4 +120,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get type => '类型';
+
+  @override
+  String get pleaseFillRequiredFields => '请填写所有必填字段';
 }
