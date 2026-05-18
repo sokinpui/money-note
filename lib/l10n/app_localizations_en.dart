@@ -105,9 +105,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get importJson => 'Import JSON';
 
   @override
-  String get pasteJson => 'Paste JSON here';
-
-  @override
   String get dailySummary => 'Daily Summary';
 
   @override

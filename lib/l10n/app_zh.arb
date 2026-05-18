@@ -31,7 +31,6 @@
   "close": "关闭",
   "exportJson": "导出 JSON",
   "importJson": "导入 JSON",
-  "pasteJson": "在此处粘贴 JSON",
   "dailySummary": "每日摘要",
   "netEarnings": "净收益",
   "daysAverage": "{days}天平均",

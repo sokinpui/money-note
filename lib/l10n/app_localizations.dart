@@ -290,12 +290,6 @@ abstract class AppLocalizations {
   /// **'Import JSON'**
   String get importJson;
 
-  /// No description provided for @pasteJson.
-  ///
-  /// In en, this message translates to:
-  /// **'Paste JSON here'**
-  String get pasteJson;
-
   /// No description provided for @dailySummary.
   ///
   /// In en, this message translates to:

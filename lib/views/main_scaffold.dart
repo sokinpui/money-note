@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:file_picker/file_picker.dart';
 import '../l10n/app_localizations.dart';
 import 'dashboard_page.dart';
 import 'history_page.dart';
@@ -47,40 +48,32 @@ class _MainScaffoldState extends ConsumerState<MainScaffold> with SingleTickerPr
 
   void _importData() async {
     final l10n = AppLocalizations.of(context)!;
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (dialogContext) => AlertDialog(
-        title: Text(l10n.importJson),
-        content: TextField(
-          controller: controller,
-          maxLines: 5,
-          decoration: InputDecoration(hintText: l10n.pasteJson),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: Text(l10n.cancel)),
-          TextButton(
-            onPressed: () async {
-              try {
-                final list = jsonDecode(controller.text);
-                await ref.read(recordProvider.notifier).importRecords(list);
-                if (dialogContext.mounted) {
-                  Navigator.pop(dialogContext);
-                }
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(l10n.importSuccess)));
-                }
-              } catch (e) {
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.error}: $e')));
-                }
-              }
-            },
-            child: Text(l10n.importData),
-          ),
-        ],
-      ),
-    );
+    try {
+      FilePickerResult? result = await FilePicker.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+
+      if (result != null) {
+        File file = File(result.files.single.path!);
+        final content = await file.readAsString();
+        final list = jsonDecode(content);
+        
+        await ref.read(recordProvider.notifier).importRecords(list);
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(l10n.importSuccess)),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${l10n.error}: $e')),
+        );
+      }
+    }
   }
 
   void _exportData() async {

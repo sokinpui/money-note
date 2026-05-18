@@ -105,9 +105,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get importJson => '导入 JSON';
 
   @override
-  String get pasteJson => '在此处粘贴 JSON';
-
-  @override
   String get dailySummary => '每日摘要';
 
   @override
