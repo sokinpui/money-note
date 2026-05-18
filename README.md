@@ -4,7 +4,6 @@ A simple, straightforward bookkeeping app built with Flutter and Material 3. It'
 
 ### What it does
 *   **Quick Entry:** Adding a record is fast. If you've typed something before, the app suggests it and fills in the category and amount for you.
-*   **Built-in Calculator:** Do your math right inside the value field—no need to switch apps to figure out your lunch bill split.
 *   **Dashboard:** See your spending and earnings for the last week in a simple chart. It also shows your net earnings for the current week and month.
 *   **History:** A clean list of everything you've recorded. You can also export your data if you need it elsewhere.
 *   **Offline First:** Everything is stored locally on your device using SQLite.

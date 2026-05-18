@@ -126,17 +126,6 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
     );
   }
 
-  void _showCalculator() {
-    showModalBottomSheet(
-      context: context,
-      builder: (context) => _Calculator(
-        onResult: (result) {
-          setState(() => _valueController.text = result);
-        },
-      ),
-    );
-  }
-
   Future<bool?> _showUnsavedChangesDialog() {
     final l10n = AppLocalizations.of(context)!;
     return showDialog<bool>(
@@ -281,7 +270,6 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
                 decoration: InputDecoration(
                   labelText: l10n.value,
                   border: const OutlineInputBorder(),
-                  suffixIcon: IconButton(icon: const Icon(Icons.calculate), onPressed: _showCalculator),
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -352,110 +340,6 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _Calculator extends StatefulWidget {
-  final Function(String) onResult;
-  const _Calculator({required this.onResult});
-
-  @override
-  State<_Calculator> createState() => _CalculatorState();
-}
-
-class _CalculatorState extends State<_Calculator> {
-  String _display = '';
-
-  void _onPressed(String val) {
-    setState(() {
-      if (val == '=') {
-        try {
-          _display = _evaluate(_display);
-        } catch (e) {
-          _display = 'Error';
-        }
-      } else if (val == 'C') {
-        _display = '';
-      } else {
-        _display += val;
-      }
-    });
-  }
-
-  String _evaluate(String expr) {
-    try {
-      final tokens = RegExp(r'(\d+\.?\d*)|([\+\-\*\/])').allMatches(expr)
-          .map((m) => m.group(0)!)
-          .toList();
-
-      if (tokens.isEmpty) return '0';
-
-      List<String> firstPass = [];
-      int i = 0;
-      while (i < tokens.length) {
-        if (tokens[i] == '*' || tokens[i] == '/') {
-          String op = tokens[i];
-          double left = double.parse(firstPass.removeLast());
-          double right = double.parse(tokens[++i]);
-          if (op == '*') {
-            firstPass.add((left * right).toString());
-          } else {
-            firstPass.add((left / right).toString());
-          }
-        } else {
-          firstPass.add(tokens[i]);
-        }
-        i++;
-      }
-
-      double result = double.parse(firstPass[0]);
-      i = 1;
-      while (i < firstPass.length) {
-        String op = firstPass[i++];
-        double val = double.parse(firstPass[i++]);
-        if (op == '+') {
-          result += val;
-        } else {
-          result -= val;
-        }
-      }
-      
-      return result % 1 == 0 ? result.toInt().toString() : result.toStringAsFixed(2);
-    } catch (e) {
-      return 'Error';
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(_display, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-          const Divider(),
-          GridView.count(
-            shrinkWrap: true,
-            crossAxisCount: 4,
-            children: [
-              for (var btn in ['7', '8', '9', '/', '4', '5', '6', '*', '1', '2', '3', '-', '0', 'C', '=', '+'])
-                TextButton(
-                  onPressed: () {
-                    if (btn == '=') {
-                      widget.onResult(_display);
-                      Navigator.pop(context);
-                    } else {
-                      _onPressed(btn);
-                    }
-                  },
-                  child: Text(btn, style: const TextStyle(fontSize: 20)),
-                ),
-            ],
-          ),
-        ],
       ),
     );
   }

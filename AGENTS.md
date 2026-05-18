@@ -16,7 +16,6 @@ Compact guidance for agents working on this Flutter bookkeeping app.
 - **L10n**: Access strings via `AppLocalizations.of(context)!`.
 
 ## Key Logic
-- **Calculator**: Custom implementation in `lib/views/add_record_page.dart` for the `value` field.
 - **Suggestions**: `RecordNotifier.getSuggestions` provides auto-fill based on previous record names.
 - **Offline-first**: SQLite is the source of truth. No remote sync.
 
