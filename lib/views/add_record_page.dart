@@ -270,6 +270,10 @@ class _AddRecordPageState extends ConsumerState<AddRecordPage> {
                 decoration: InputDecoration(
                   labelText: l10n.value,
                   border: const OutlineInputBorder(),
+                  prefixIcon: const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 12.0),
+                    child: Icon(Icons.attach_money),
+                  ),
                 ),
                 keyboardType: TextInputType.number,
               ),
