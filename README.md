@@ -19,6 +19,9 @@ Standard Flutter rules apply:
 1. `flutter pub get`
 2. `flutter run`
 
+### Download
+You can download the latest compiled binaries for Android and iOS from the [Releases](https://github.com/sokinpui/money-note/releases) page.
+
 ### Development & Deployment
 
 #### Android
