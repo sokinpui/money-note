@@ -85,6 +85,35 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
     final recordsAsync = ref.watch(recordProvider);
     final l10n = AppLocalizations.of(context)!;
 
+    double totalIncome = 0;
+    double totalExpense = 0;
+    DateTime? startDate;
+    DateTime? endDate;
+
+    if (_isSelectionMode) {
+      recordsAsync.whenData((records) {
+        final selected = records.where((r) => _selectedIds.contains(r.id)).toList();
+        for (final r in selected) {
+          if (r.type == 'Income') {
+            totalIncome += r.value;
+          } else {
+            totalExpense += r.value;
+          }
+
+          if (startDate == null || r.date.isBefore(startDate!)) {
+            startDate = r.date;
+          }
+          if (endDate == null || r.date.isAfter(endDate!)) {
+            endDate = r.date;
+          }
+        }
+      });
+    }
+
+    final dateRangeStr = startDate != null && endDate != null
+        ? '${DateFormat('yyyy-MM-dd').format(startDate!)} ~ ${DateFormat('yyyy-MM-dd').format(endDate!)}'
+        : '';
+
     return PopScope(
       canPop: !_isSelectionMode,
       onPopInvokedWithResult: (didPop, result) {
@@ -112,6 +141,38 @@ class _HistoryPageState extends ConsumerState<HistoryPage> {
                     onPressed: _deleteSelected,
                   ),
                 ],
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(48),
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Wrap(
+                              spacing: 12,
+                              children: [
+                                Text('+${totalIncome.toStringAsFixed(2)}',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.green)),
+                                Text('-${totalExpense.toStringAsFixed(2)}',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold, color: Colors.red)),
+                                Text('${l10n.netEarnings}: ${(totalIncome - totalExpense).toStringAsFixed(2)}',
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                            if (dateRangeStr.isNotEmpty)
+                              Text(
+                                dateRangeStr,
+                                style: Theme.of(context).textTheme.labelSmall,
+                              ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               )
             : null,
         body: recordsAsync.when(

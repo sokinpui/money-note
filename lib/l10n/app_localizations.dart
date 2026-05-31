@@ -299,7 +299,7 @@ abstract class AppLocalizations {
   /// No description provided for @netEarnings.
   ///
   /// In en, this message translates to:
-  /// **'Net Earnings'**
+  /// **'Net'**
   String get netEarnings;
 
   /// No description provided for @daysAverage.

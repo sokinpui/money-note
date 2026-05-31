@@ -32,7 +32,7 @@
   "exportJson": "Export JSON",
   "importJson": "Import JSON",
   "dailySummary": "Daily Summary",
-  "netEarnings": "Net Earnings",
+  "netEarnings": "Net",
   "daysAverage": "{days} days average",
   "@daysAverage": {
     "placeholders": {

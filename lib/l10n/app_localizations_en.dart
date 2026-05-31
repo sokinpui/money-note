@@ -108,7 +108,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dailySummary => 'Daily Summary';
 
   @override
-  String get netEarnings => 'Net Earnings';
+  String get netEarnings => 'Net';
 
   @override
   String daysAverage(int days) {
